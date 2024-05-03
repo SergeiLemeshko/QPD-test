@@ -1,6 +1,6 @@
 
 describe("Функция Calculator", function () {
- 
+
   it("5 * 5 * 5 - 1 * 12 / 4 + 1 + 5 = 128", function () {
     assert.deepEqual(
       new Calculator(5)
