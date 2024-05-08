@@ -4,26 +4,24 @@ const someCalc = function(a) {
 
 function throttle(callback, wait, context = this) {
   let timeout = null; // идентификатор, который используется для предотвращения множественных вызовов функции callback
-  let callbackArgs = null; // аргументы для вызова первой функции
-  let otherСallbackArgs = null; // аргументы для вызова последней функции
+  let callbackArgs = null; // аргументы для вызова функции
+  let isFirstCall = true; // флаг, для идентификации первого вызова callback
 
   // вызывает callback с аргументами callbackArgs через заданное время (wait)
   const later = () => {
     callback.apply(context, callbackArgs);
     timeout = null; // чистим timeout после вызова callback (сообщаем, что вызов функции был завершен)
-
-    // вызываем callback с аргументами otherСallbackArgs и помещаем результат в lastResult
-    let lastResult = callback.apply(context, otherСallbackArgs); // результат последней вызванной функции
-    console.log(lastResult);
   }
+
   // возвращаем анонимную функцию, которая будет вызывать callback в случае, если прошло время wait с момента последнего вызова.
   return function() {
-    if(!timeout) {
-      callbackArgs = arguments;
+    if (isFirstCall) {
+      isFirstCall = false;
+      callback.apply(context, arguments);
+    } else if (!timeout) {
       timeout = setTimeout(later, wait);
-    } 
-    else if(timeout && arguments) { // пока timeout, собираем остальные аргументы в otherСallbackArgs
-      otherСallbackArgs = arguments;
+    } else {
+      callbackArgs = arguments;
     }
   }
 };
