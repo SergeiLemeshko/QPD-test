@@ -47,19 +47,23 @@ myObject.setName('Alice');
 console.log(myObject.getName());
 
 
-//-------------------- функция, которая наследует один класс от другого ----------------------
+// -------------------- функция, которая наследует один класс от другого ----------------------
 
 function extendClass(Child, Parent) {
-  // Создаем новый объект, прототип которого ссылается на прототип родительского класса
-  Child.prototype = Object.create(Parent.prototype);
+  let parentProto = Parent.prototype;
+  let childProto = Child.prototype;
+  
+  // Получаем все свойства из прототипа класса parent
+  let parentProperties = Object.getOwnPropertyNames(parentProto);
+  
+  // Проходимся по всем свойствам и добавляем их в прототип класса Сhild, если их там еще нет
+  parentProperties.forEach(property => {
+    if (!(property in childProto)) {
+      childProto[property] = parentProto[property];
+    }
+  });
 
-  // Конструктор для дочернего класса
-  Child.prototype.constructor = Child;
-
-  // Метод super(), который позволяет вызывать конструктор родительского класса
-  Child.prototype.super = function(...args) {
-    Parent.call(this, ...args);
-  };
+  return Child;
 }
 
 class Person {
@@ -73,9 +77,10 @@ class Person {
   }
 }
 
-class Employee extends Person {
+class Employee {
   constructor(name, age, company) {
-    super(name, age);
+    this.name = name;
+    this.age = age;
     this.company = company;
   }
 
@@ -86,10 +91,8 @@ class Employee extends Person {
 
 extendClass(Employee, Person);
 
-// Создание экземпляров и использование методов
 const tom = new Person('Tom', 34);
-tom.print(); // Name: Tom  Age: 34
-
 const bob = new Employee('Bob', 36, 'Google');
-bob.print(); // Name: Bob  Age: 36
-bob.work(); // Bob works in Google
+
+bob.print(); // 'Имя: Bob  Возраст: 36'
+bob.work(); // 'Bob работает в Google'
