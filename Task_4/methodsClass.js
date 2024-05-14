@@ -2,6 +2,10 @@
 
 function createClass(className, properties) {
   function Class() {
+    if (!(this instanceof Class)) {
+      console.log("Конструктор класса вызван без new")
+      return;
+    }
     // Конструктор класса
     if (typeof this.init === 'function') {
       this.init.apply(this, arguments);
@@ -50,18 +54,17 @@ console.log(myObject.getName());
 // -------------------- функция, которая наследует один класс от другого ----------------------
 
 function extendClass(Child, Parent) {
-  let parentProto = Parent.prototype;
-  let childProto = Child.prototype;
-  
-  // Получаем все свойства из прототипа класса parent
-  let parentProperties = Object.getOwnPropertyNames(parentProto);
-  
-  // Проходимся по всем свойствам и добавляем их в прототип класса Сhild, если их там еще нет
-  parentProperties.forEach(property => {
-    if (!(property in childProto)) {
-      childProto[property] = parentProto[property];
-    }
-  });
+  // Получаем все свойства и их дескрипторы из прототипа родительского класса
+  let parentDescriptors = Object.getOwnPropertyDescriptors(Parent.prototype);
+
+  // Устанавливаем прототип дочернего класса в прототип родительского класса
+  Object.setPrototypeOf(Child.prototype, Parent.prototype);
+
+  // Устанавливаем все свойства и их дескрипторы в прототип дочернего класса
+  Object.defineProperties(Child.prototype, parentDescriptors);
+
+  // Восстанавливаем конструктор дочернего класса
+  Child.prototype.constructor = Child;
 
   return Child;
 }
