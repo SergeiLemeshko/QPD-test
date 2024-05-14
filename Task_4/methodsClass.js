@@ -17,8 +17,6 @@ function createClass(className, properties) {
     for (let prop in properties) {
       if (properties.hasOwnProperty(prop)) { // имеет ли этот объект указанное свойство как собственное свойство (а не наследует его)
         Class.prototype[prop] = properties[prop];
-        // console.log(prop, "prop")
-        // console.log(properties[prop], "properties[prop]")
       }
     }
   }
@@ -30,26 +28,41 @@ function createClass(className, properties) {
 }
 
 // Пример использования
-const SomeClass = createClass('SomeClass', {
-    init: function(name) {
+const Parent = createClass('Parent', {
+  init: function(name, age, company) {
     this.name = name;
+    this.age = age;
+    this.company = company;
   },
   getName: function() {
     return this.name;
   },
   setName: function(newName) {
     this.name = newName;
+  },
+  print: function() {
+    return console.log(`Имя: ${this.name}  Возраст: ${this.age}`);
   }
 });
 
-// Создаем экземпляр класса
-const myObject = new SomeClass('John');
+const Child = createClass('Parent', {
+  init: function(name, age) {
+    this.name = name;
+    this.age = age;
+  }
+});
 
-// Используем методы класса
-console.log(myObject.getName());
-myObject.setName('Alice');
-console.log(myObject.getName());
+extendClass(Child, Parent);
 
+const myParent = new Parent('Alex', 34, 'QPD');
+const myChild = new Child('Max', 36, "Google");
+
+console.log(myChild.getName());
+myChild.setName('Alice');
+console.log(myChild.getName());
+myChild.print();
+console.log(myParent, "myParent");
+console.log(myChild, "myChild");
 
 // -------------------- функция, которая наследует один класс от другого ----------------------
 
