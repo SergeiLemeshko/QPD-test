@@ -68,5 +68,72 @@ const someUser: ReadonlySomeUser = {
   },
 };
 
-someUser.name = "Bob";
-someUser.address.city = "Moscow";
+// someUser.name = "Bob";
+// someUser.address.city = "Moscow";
+
+//------------------- First of Array ---------------------//
+
+//extends - для ограничения типа (в данном случае ограничения массива любого типа) и проверки является ли T пустым массивом
+type First<T extends any[]> = T extends [] ? never : T[0];
+
+type arr1 = ["a", "b", "c"];
+type arr2 = [3, 2, 1];
+
+type head1 = First<arr1>; // expected to be 'a'
+type head2 = First<arr2>; // expected to be 3
+
+//------------------ Get Return Type -------------------//
+
+//extends - проверяет, является ли Type функцией с аргументами любого типа, infer - для вывода типа из выражения
+type MyReturnType<Type> = Type extends (...args: never[]) => infer Return ? Return : never;
+
+  const fn = (v: boolean) => {
+    if (v) return 1;
+    else return 2;
+  };
+  
+  type a = MyReturnType<typeof fn>; // should be "1 | 2"
+  
+//------------------------ Pick ------------------------//
+
+// K extends keyof T - забирает имена свойств из T, которые мы указываем
+type MyPick<T, K extends keyof T> = { 
+  [P in K]: T[P] 
+};
+interface Todo {
+  title: string;
+  description: string;
+  completed: boolean;
+}
+
+type TodoPreview = MyPick<Todo, "title" | "completed">;
+
+const todo: TodoPreview = {
+  title: "Clean room",
+  completed: false,
+};
+
+//----------------------- Exclude ----------------------//
+
+type MyExclude<T, K> = T extends K ? never : T;
+
+type T0 = MyExclude<"a" | "b" | "c", "a">; // expected "b" | "c"
+type T1 = MyExclude<"a" | "b" | "c", "a" | "b">; // expected "c"
+
+//------------------------ Omit -----------------------//
+
+type MyOmit<T, K extends keyof T> = {
+  [P in keyof T as P extends K ? never : P]: T[P]; // если свойство P из T === свойству из K, исключаем (never) из нового типа, иначе включаем в новый тип
+};
+
+interface Todo {
+  title: string;
+  description: string;
+  completed: boolean;
+}
+
+type TodoPrev = MyOmit<Todo, "description" | "title">;
+
+const task: TodoPrev = {
+  completed: false,
+};
