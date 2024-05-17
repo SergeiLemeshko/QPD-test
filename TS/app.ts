@@ -23,7 +23,7 @@ const user: User = {
   age: 30,
   name: "Alice",
   email: "alice@example.com",
-  phoneNumber: 1234567890, 
+  phoneNumber: 1234567890,
   role: "user",
 };
 
@@ -31,7 +31,7 @@ const admin: Admin = {
   age: 40,
   stage: "Senior",
   name: "Bob",
-  phoneNumber: "0987654321", 
+  phoneNumber: "0987654321",
   role: "superadmin",
 };
 
@@ -87,18 +87,18 @@ type head2 = First<arr2>; // expected to be 3
 //extends - проверяет, является ли Type функцией с аргументами любого типа, infer - для вывода типа из выражения
 type MyReturnType<Type> = Type extends (...args: never[]) => infer Return ? Return : never;
 
-  const fn = (v: boolean) => {
-    if (v) return 1;
-    else return 2;
-  };
-  
-  type a = MyReturnType<typeof fn>; // should be "1 | 2"
-  
+const fn = (v: boolean) => {
+  if (v) return 1;
+  else return 2;
+};
+
+type a = MyReturnType<typeof fn>; // should be "1 | 2"
+
 //------------------------ Pick ------------------------//
 
 // K extends keyof T - забирает имена свойств из T, которые мы указываем
-type MyPick<T, K extends keyof T> = { 
-  [P in K]: T[P] 
+type MyPick<T, K extends keyof T> = {
+  [P in K]: T[P]
 };
 interface Todo {
   title: string;
@@ -144,6 +144,7 @@ const task: TodoPrev = {
   K - новый ключ
   V - новое значение
 */
+// вариант 1
 type AppendToObject<T, K extends string | number, I> = {
   [Property in keyof T]: T[Property]; // копируем свойства из T
 } & {
@@ -152,3 +153,20 @@ type AppendToObject<T, K extends string | number, I> = {
 
 type Test = { id: "1" };
 type Result = AppendToObject<Test, "value", 4>; // expected to be { id: '1', value: 4 }
+
+// вариант 2
+type AppendToObject2<T, K extends string | number, I> = {
+  [P in keyof T | K]: P extends keyof T ? T[P] : I
+}
+
+type Result2 = AppendToObject2<Test, "value", 4>; // expected to be { id: '1', value: 4 }
+
+type r = {
+  [P in keyof Test]: Test[P];
+}
+
+// пример работы Unbox
+type b = Array<{ name: string, type: number }>;
+type Unbox<T> = T extends Array<infer U> ? U : never;
+
+type tt = Unbox<b>; 
