@@ -137,3 +137,18 @@ type TodoPrev = MyOmit<Todo, "description" | "title">;
 const task: TodoPrev = {
   completed: false,
 };
+
+//------------------ Append to Object -----------------//
+/*
+  T - исходный объект
+  K - новый ключ
+  V - новое значение
+*/
+type AppendToObject<T, K extends string | number, I> = {
+  [Property in keyof T]: T[Property]; // копируем свойства из T
+} & {
+  [Property in K]: I; // добавляем ключ K и значение I в новое свойство объекта
+};
+
+type Test = { id: "1" };
+type Result = AppendToObject<Test, "value", 4>; // expected to be { id: '1', value: 4 }
